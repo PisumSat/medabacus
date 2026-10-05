@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0d9488" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="description" content="MEDABACUS - Comprehensive evidence-based hospital clinical calculator and decision suite for Internal Medicine, Surgery, OB/GYN, and Pediatrics." />
+    <title>MEDABACUS - Hospital Clinical Ward Calculator & Decision Suite</title>
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('medabacus_theme') || localStorage.getItem('ogcal_theme') || localStorage.getItem('aura_theme');
+          if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+          const colorTheme = localStorage.getItem('medabacus_color_theme') || 'clinical';
+          document.documentElement.setAttribute('data-theme', colorTheme);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

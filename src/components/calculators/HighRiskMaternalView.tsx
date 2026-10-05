@@ -1,0 +1,349 @@
+import React, { useState, useMemo } from 'react';
+import { ShieldAlert, RotateCcw } from 'lucide-react';
+import { StarButton } from '../ui/StarButton';
+import { NumberStepper } from '../ui/NumberStepper';
+import { CopyNoteButton } from '../CopyNoteButton';
+import { ReferenceAccordion } from '../ReferenceAccordion';
+import { StickyMobileAction } from '../ui/StickyMobileAction';
+import {
+  evaluateHellpSyndrome,
+  evaluateNichdFhrCategory,
+  getHelperrMnemonic,
+} from '../../calculators/obgynExpanded';
+
+interface HighRiskMaternalViewProps {
+  patientTag?: string;
+}
+
+export const HighRiskMaternalView: React.FC<HighRiskMaternalViewProps> = ({ patientTag }) => {
+  const [activeTab, setActiveTab] = useState<'hellp' | 'fhr' | 'helperr'>('hellp');
+
+  // HELLP state
+  const [platelets, setPlatelets] = useState(48000);
+  const [ast, setAst] = useState(140);
+  const [ldh, setLdh] = useState(720);
+  const [bili, setBili] = useState(1.4);
+
+  // FHR state
+  const [baselineBpm, setBaselineBpm] = useState(135);
+  const [variability, setVariability] = useState<'absent' | 'minimal' | 'moderate' | 'marked'>('absent');
+  const [lateDecels, setLateDecels] = useState<'none' | 'intermittent' | 'recurrent'>('recurrent');
+  const [varDecels, setVarDecels] = useState<'none' | 'intermittent' | 'recurrent'>('none');
+  const [prolongedDecels, setProlongedDecels] = useState(false);
+  const [sinusoidal, setSinusoidal] = useState(false);
+
+  const hellpResult = useMemo(
+    () =>
+      evaluateHellpSyndrome({
+        plateletsPerMicroLiter: platelets,
+        astOrAltU_L: ast,
+        ldhU_L: ldh,
+        totalBilirubinMgDl: bili,
+      }),
+    [platelets, ast, ldh, bili]
+  );
+
+  const fhrResult = useMemo(
+    () =>
+      evaluateNichdFhrCategory({
+        baselineBpm,
+        variability,
+        lateDecelerations: lateDecels,
+        variableDecelerations: varDecels,
+        prolongedDecelerations: prolongedDecels,
+        sinusoidalPattern: sinusoidal,
+      }),
+    [baselineBpm, variability, lateDecels, varDecels, prolongedDecels, sinusoidal]
+  );
+
+  const helperrSteps = useMemo(() => getHelperrMnemonic(), []);
+
+  const resetAll = () => {
+    setPlatelets(48000);
+    setAst(140);
+    setLdh(720);
+    setBili(1.4);
+    setBaselineBpm(135);
+    setVariability('absent');
+    setLateDecels('recurrent');
+    setVarDecels('none');
+    setProlongedDecels(false);
+    setSinusoidal(false);
+  };
+
+  const clinicalNote = useMemo(() => {
+    const lines = [
+      `=== MEDABACUS OB/GYN HIGH-RISK & LABOR NOTE ===`,
+      patientTag ? `Patient: ${patientTag}` : '',
+      `Active Evaluation: ${activeTab.toUpperCase()}`,
+      `--- HELLP Syndrome (Mississippi Class) ---`,
+      `Platelets: ${platelets.toLocaleString()}/mcL | AST/ALT: ${ast} U/L | LDH: ${ldh} U/L | Bili: ${bili} mg/dL`,
+      `Classification: ${hellpResult.mississippiClass || 'Excluded'} | Complete HELLP: ${hellpResult.hasHellp ? 'YES' : 'NO'}`,
+      `Management: ${hellpResult.clinicalManagement}`,
+      `--- NICHD 3-Tier FHR Category ---`,
+      `Baseline: ${baselineBpm} bpm | Variability: ${variability} | Late Decels: ${lateDecels}`,
+      `Category: ${fhrResult.category}`,
+      `Clinical Action: ${fhrResult.clinicalAction}`,
+    ].filter(Boolean);
+    return lines.join('\n');
+  }, [patientTag, activeTab, platelets, ast, ldh, bili, hellpResult, baselineBpm, variability, lateDecels, fhrResult]);
+
+  const references = [
+    {
+      source: 'Martin JN Jr, et al. Am J Obstet Gynecol 2006',
+      title: 'Understanding and managing HELLP syndrome: the integral role of aggressive glucocorticoids.',
+      details: 'Am J Obstet Gynecol. 2006;195(4):914-934.',
+    },
+    {
+      source: 'NICHD Workshop Report. Obstet Gynecol 2008',
+      title: 'Update on electronic fetal monitoring definitions, interpretation, and research guidelines.',
+      details: 'Obstet Gynecol. 2008;112(3):661-666.',
+    },
+    {
+      source: 'ACOG Practice Bulletin No. 178 (2017/2020)',
+      title: 'Practice Bulletin No. 178: Shoulder Dystocia & HELPERR Protocol.',
+      details: 'Obstet Gynecol. 2017;129(5):e123-e134.',
+    },
+  ];
+
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto pb-16">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-rose-50 dark:bg-rose-950/60 rounded-xl text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">High-Risk Obstetrics & Labor Suite</h1>
+              <span className="px-2 py-0.5 text-xs font-semibold bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 rounded-md">
+                ACOG / NICHD / Mississippi
+              </span>
+              <StarButton toolId="high_risk_maternal" />
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              HELLP syndrome (Mississippi class), NICHD 3-tier FHR category & HELPERR shoulder dystocia protocol
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 self-end sm:self-center">
+          <button
+            onClick={resetAll}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors border border-slate-200 dark:border-slate-700"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Reset
+          </button>
+          <CopyNoteButton textToCopy={clinicalNote} />
+        </div>
+      </div>
+
+      {/* Tabs: Responsive 3-Column Grid */}
+      <div className="grid grid-cols-3 border border-slate-200/80 dark:border-slate-800 bg-slate-100 dark:bg-slate-900/60 p-1 rounded-2xl gap-1.5 shadow-2xs">
+        {(
+          [
+            { id: 'hellp', label: 'HELLP Syndrome', badge: hellpResult.mississippiClass ? hellpResult.mississippiClass.split(' ')[1] : 'Excluded' },
+            { id: 'fhr', label: 'NICHD FHR', badge: fhrResult.category.split(' ')[1] },
+            { id: 'helperr', label: 'HELPERR Protocol', badge: '7 Steps' },
+          ] as const
+        ).map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setActiveTab(t.id)}
+            className={`w-full py-2 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-between gap-1 min-w-0 cursor-pointer tap-bounce active:scale-95 ${
+              activeTab === t.id
+                ? 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-xs ring-1 ring-rose-500/20'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+            }`}
+          >
+            <span className="truncate">{t.label}</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded-md shrink-0 font-bold ${
+                activeTab === t.id
+                  ? 'bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300'
+                  : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+              }`}
+            >
+              {t.badge}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Tab 1: HELLP Syndrome */}
+      {activeTab === 'hellp' && (
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-4 text-xs">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+              Diagnostic Triad (Hemolysis, Elevated Liver Enzymes, Low Platelets)
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold mb-1">Platelet Count (/μL)</label>
+                <NumberStepper value={platelets} onChange={setPlatelets} min={5000} max={300000} step={5000} unit="/μL" />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">AST or ALT Transaminase (U/L)</label>
+                <NumberStepper value={ast} onChange={setAst} min={10} max={2000} step={5} unit="U/L" />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Lactate Dehydrogenase (LDH U/L)</label>
+                <NumberStepper value={ldh} onChange={setLdh} min={100} max={4000} step={20} unit="U/L" />
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Total Bilirubin (mg/dL)</label>
+                <NumberStepper value={bili} onChange={setBili} min={0.2} max={15.0} step={0.1} unit="mg/dL" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent border border-rose-200 dark:border-rose-900/60 rounded-xl p-5 shadow-sm">
+            <span className="text-xs font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-400">
+              Diagnostic Outcome
+            </span>
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
+              {hellpResult.mississippiClass ?? (hellpResult.hasHellp ? 'HELLP Syndrome' : 'Diagnostic Criteria Not Fully Met')}
+              <span className={`ml-3 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
+                hellpResult.hasHellp ? 'bg-rose-600 text-white' : 'bg-slate-600 text-white'
+              }`}>
+                {hellpResult.hasHellp ? 'Critical Obstetric Emergency' : 'Monitor / Reassess'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-700 dark:text-slate-300 mt-2">
+              {hellpResult.clinicalManagement}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: NICHD FHR Category */}
+      {activeTab === 'fhr' && (
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-4 text-xs">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+              Intrapartum EFM Tracing Characteristics
+            </h2>
+            <div>
+              <label className="block font-semibold mb-1">Baseline Heart Rate: {baselineBpm} bpm (Normal: 110–160)</label>
+              <NumberStepper value={baselineBpm} onChange={setBaselineBpm} min={60} max={220} step={5} unit="bpm" />
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Baseline FHR Variability</label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { id: 'absent', label: 'Absent (undetectable)' },
+                  { id: 'minimal', label: 'Minimal (≤ 5 bpm)' },
+                  { id: 'moderate', label: 'Moderate (6–25 bpm)' },
+                  { id: 'marked', label: 'Marked (> 25 bpm)' },
+                ].map((v) => (
+                  <button
+                    key={v.id}
+                    onClick={() => setVariability(v.id as any)}
+                    className={`p-2.5 rounded-lg border font-medium ${variability === v.id ? 'bg-rose-600 text-white' : 'bg-slate-50 dark:bg-slate-800'}`}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block font-semibold mb-1">Late Decelerations</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['none', 'intermittent', 'recurrent'].map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setLateDecels(d as any)}
+                      className={`p-2 rounded-lg border capitalize font-medium ${lateDecels === d ? 'bg-rose-600 text-white' : 'bg-slate-50 dark:bg-slate-800'}`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold mb-1">Variable Decelerations</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['none', 'intermittent', 'recurrent'].map((d) => (
+                    <button
+                      key={d}
+                      onClick={() => setVarDecels(d as any)}
+                      className={`p-2 rounded-lg border capitalize font-medium ${varDecels === d ? 'bg-rose-600 text-white' : 'bg-slate-50 dark:bg-slate-800'}`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-2 border-t border-slate-200 dark:border-slate-700">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={prolongedDecels} onChange={(e) => setProlongedDecels(e.target.checked)} className="rounded text-rose-600" />
+                <span>Prolonged deceleration (≥ 2 min and &lt; 10 min)</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={sinusoidal} onChange={(e) => setSinusoidal(e.target.checked)} className="rounded text-rose-600" />
+                <span>Sinusoidal pattern (smooth, sine wave-like undulating baseline)</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-rose-500/10 via-rose-500/5 to-transparent border border-rose-200 dark:border-rose-900/60 rounded-xl p-5 shadow-sm">
+            <span className="text-xs font-semibold uppercase tracking-wider text-rose-700 dark:text-rose-400">
+              NICHD 3-Tier Classification
+            </span>
+            <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
+              {fhrResult.category}
+              <span className={`ml-3 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
+                fhrResult.category.includes('Category III') ? 'bg-rose-600 text-white' : fhrResult.category.includes('Category II') ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white'
+              }`}>
+                {fhrResult.category.includes('Category III') ? 'Expeditious Delivery' : fhrResult.category.includes('Category II') ? 'Surveillance / Resuscitate' : 'Normal'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-700 dark:text-slate-300 mt-2">
+              {fhrResult.clinicalAction}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 3: HELPERR Protocol */}
+      {activeTab === 'helperr' && (
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm space-y-3">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-2">
+              Structured Sequence of Shoulder Dystocia Emergency Maneuvers
+            </h2>
+            <div className="space-y-2 text-xs">
+              {helperrSteps.map((s, idx) => (
+                <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 font-bold rounded">
+                      {s.step}
+                    </span>
+                    <strong className="text-slate-900 dark:text-white">{s.action}</strong>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 mt-1 pl-1">
+                    {s.technique}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* References */}
+      <ReferenceAccordion references={references} />
+
+      {/* Sticky Mobile Copy Action */}
+      <StickyMobileAction scoreBadge={activeTab.toUpperCase()} noteText={clinicalNote} />
+    </div>
+  );
+};

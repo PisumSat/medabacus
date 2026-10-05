@@ -1,0 +1,65 @@
+import { Activity, Flame, Baby, Stethoscope, Hospital } from 'lucide-react';
+import type { WardDefinition, WardNavigationItem } from '../types/wards';
+
+export const HOSPITAL_WARDS: WardDefinition[] = [
+  {
+    id: 'internal_medicine',
+    name: 'Internal Medicine',
+    shortName: 'Med Ward',
+    badge: '65+ Clinical Formulas',
+    description: 'Renal function, thromboembolism risk, AFib anticoagulation, CURB-65 & PSI/PORT pneumonia triage, and electrolyte diagnostics.',
+    gradient: 'from-blue-600 to-indigo-700',
+    lightBg: 'bg-blue-50/50 hover:bg-blue-50',
+    darkBg: 'dark:bg-blue-950/20 dark:hover:bg-blue-950/30',
+    borderColor: 'border-blue-200 dark:border-blue-800/60',
+    icon: <Activity className="w-6 h-6 text-blue-600 dark:text-blue-400" />,
+    standards: ['KDIGO 2024', 'AHA/ACC 2024', 'CHEST', 'UNOS 2021', 'ATS/IDSA'],
+  },
+  {
+    id: 'surgery',
+    name: 'General Surgery & Trauma',
+    shortName: 'Surg Ward',
+    badge: '45+ Clinical Formulas',
+    description: 'Adult & pediatric Parkland burn resuscitation, Alvarado/AIR RLQ triage, RCRI & Goldman/NSQIP risk clearance, and Caprini VTE.',
+    gradient: 'from-amber-600 to-rose-700',
+    lightBg: 'bg-amber-50/50 hover:bg-amber-50',
+    darkBg: 'dark:bg-amber-950/20 dark:hover:bg-amber-950/30',
+    borderColor: 'border-amber-200 dark:border-amber-800/60',
+    icon: <Flame className="w-6 h-6 text-amber-600 dark:text-amber-400" />,
+    standards: ['ABA 2023', 'ACS NSQIP', 'WSES Jerusalem', 'ACC/AHA Preop', 'CHEST 2012'],
+  },
+  {
+    id: 'obgyn',
+    name: 'Obstetrics & Gynecology',
+    shortName: 'OB/GYN Ward',
+    badge: '45+ Clinical Formulas',
+    description: 'ACOG 700 EDD dating, Bishop ripening, Grobman VBAC, Hadlock 4 EFW, preeclampsia PB 222 & CMQCC hemorrhage.',
+    gradient: 'from-teal-600 to-emerald-700',
+    lightBg: 'bg-teal-50/50 hover:bg-teal-50',
+    darkBg: 'dark:bg-teal-950/20 dark:hover:bg-teal-950/30',
+    borderColor: 'border-teal-200 dark:border-teal-800/60',
+    icon: <Stethoscope className="w-6 h-6 text-teal-600 dark:text-teal-400" />,
+    standards: ['ACOG CO 700', 'ACOG PB 222', 'SMFM Hadlock', 'CMQCC QBL', 'NRP / AAP'],
+  },
+  {
+    id: 'pediatrics',
+    name: 'Pediatrics & Resuscitation',
+    shortName: 'Peds Ward',
+    badge: '45+ Clinical Formulas',
+    description: 'Pediatric GCS, Holliday-Segar fluids, Khine cuffed ETT size/depth, AAP 2017 blood pressure percentiles, PALS defib & drug dosing.',
+    gradient: 'from-sky-500 to-violet-600',
+    lightBg: 'bg-sky-50/50 hover:bg-sky-50',
+    darkBg: 'dark:bg-sky-950/20 dark:hover:bg-sky-950/30',
+    borderColor: 'border-sky-200 dark:border-sky-800/60',
+    icon: <Baby className="w-6 h-6 text-sky-600 dark:text-sky-400" />,
+    standards: ['AAP 2024', 'AAP 2017 BP', 'PALS 2020', 'Khine ETT', 'Holliday-Segar'],
+  },
+];
+
+export const WARDS_LIST: WardNavigationItem[] = [
+  { id: 'all', label: 'All Formulas', count: 200, icon: <Hospital className="w-3.5 h-3.5" /> },
+  { id: 'internal_medicine', label: 'Internal Medicine', count: 65, icon: <Activity className="w-3.5 h-3.5" /> },
+  { id: 'surgery', label: 'Surgery & Trauma', count: 45, icon: <Flame className="w-3.5 h-3.5" /> },
+  { id: 'obgyn', label: 'OB / GYN', count: 45, icon: <Stethoscope className="w-3.5 h-3.5" /> },
+  { id: 'pediatrics', label: 'Pediatrics', count: 45, icon: <Baby className="w-3.5 h-3.5" /> },
+];
