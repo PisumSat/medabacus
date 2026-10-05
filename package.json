@@ -1,7 +1,9 @@
 {
-  "name": "obgyn-calculator",
+  "name": "medabacus",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Hospital Clinical Ward Calculator & Decision Suite for Internal Medicine, Surgery, Pediatrics, and OB/GYN",
+  "homepage": "https://medabacus.vercel.app/",
   "type": "module",
   "scripts": {
     "dev": "vite --port 1000 --host",
