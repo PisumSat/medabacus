@@ -1,12 +1,12 @@
 # MEDABACUS — Point-of-Care Hospital Clinical Calculator & Decision Suite
 
-[![Live Web Application](https://img.shields.io/badge/Live%20Website-medabacus.vercel.app-000000.svg?style=for-the-badge&logo=vercel&logoColor=white)](https://medabacus.vercel.app/)
+[![Live Web Application](https://img.shields.io/badge/Live%20Website-GitHub%20Pages-181717.svg?style=for-the-badge&logo=github&logoColor=white)](https://pisumsat.github.io/medabacus/)
 [![Clinical Tests](https://img.shields.io/badge/Clinical%20Tests-361%20Passed-emerald.svg?style=for-the-badge)](#test-suite--verification)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue.svg?style=for-the-badge)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-cyan.svg?style=for-the-badge)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-v4-teal.svg?style=for-the-badge)](https://tailwindcss.com/)
 
-> 🌐 **Live Web Application**: [**https://medabacus.vercel.app/**](https://medabacus.vercel.app/)  
+> 🌐 **Live Web Application**: [**https://pisumsat.github.io/medabacus/**](https://pisumsat.github.io/medabacus/)  
 > Access the complete clinical calculation suite, multimodal AI parser, and multi-patient shift census directly on any desktop or smartphone browser.
 
 **MEDABACUS** is an evidence-based clinical calculator, decision support engine, and multimodal data workstation designed for inpatient and acute hospital settings across the four core hospital clerkships: **Internal Medicine**, **General Surgery & Trauma**, **Pediatrics**, and **Obstetrics & Gynecology (OB/GYN)**.
